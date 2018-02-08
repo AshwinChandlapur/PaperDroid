@@ -40,6 +40,9 @@ public class ReadNews extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_news);
 
+        android.support.v7.app.ActionBar AB = getSupportActionBar();
+        AB.hide();
+
       website_url = getIntent().getStringExtra("url");
       headline = getIntent().getStringExtra("headline");
 
@@ -47,8 +50,6 @@ public class ReadNews extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final StringBuilder builder = new StringBuilder();
-
                 try {
 
                     Document doc = Jsoup.connect(website_url).get();
@@ -77,9 +78,9 @@ public class ReadNews extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            TextView headline_text = (TextView)findViewById(R.id.headline);
-                            TextView body_text = (TextView)findViewById(R.id.body);
-                            TextView full_news = (TextView)findViewById(R.id.fullnews);
+                            TextView headline_text = findViewById(R.id.headline);
+                            TextView body_text = findViewById(R.id.body);
+                            TextView full_news = findViewById(R.id.fullnews);
                             headline_text.setText(headline);
                             body_text.setText(body_texts);
 
@@ -92,7 +93,7 @@ public class ReadNews extends AppCompatActivity {
                                 }
                             });
 
-                            ImageView imageView = (ImageView)findViewById(R.id.image1);
+                            ImageView imageView = findViewById(R.id.image1);
                             Picasso.with(getApplicationContext()).load(img_url).into(imageView);
                         }
                     });
@@ -106,7 +107,7 @@ public class ReadNews extends AppCompatActivity {
 
 
                 } catch (IOException e) {
-                    builder.append("Error : ").append(e.getMessage()).append("\n");
+
                 }
 
 
