@@ -1,6 +1,8 @@
 package vadeworks.paperdroid;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,19 +28,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    ListView listView;
+    Elements vijayakarnataka_headlines_elem;
+    Document vijayakarnataka_doc;
+    String vijayakarnataka_url;
 
 
-    String[] vijayakarnataka_href = new String[12];
-    String[] vijayakarnataka_headlines = new String[12];
-    String[] vijayakarnataka_article = new String[12];
-    String[] vijayakarnataka_image_url= new String[12];
-
-    String[] vijayakarnataka_others_href = new String [12];
-    String[] vijayakarnataka_others_headlines = new String [12];
+    ArrayList<String> vijayakarnataka_href = new ArrayList<String>();
+    ArrayList<String> vijayakarnataka_headlines = new ArrayList<String>();
 
 
 
@@ -70,109 +77,59 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        textviews_init();
-
-
-
+        listview_init();
 
         //For VijayaKarnataka Main Headlines//
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final StringBuilder builder = new StringBuilder();
-
-
+                Log.d("Run", "run: Start Running");
                 try {
-                    Log.d("Run", "run: Start Running");
-                    String vijayakarnataka_url="https://vijaykarnataka.indiatimes.com/";
-                    Document vijayakarnataka_doc = Jsoup.connect(vijayakarnataka_url).get();
-                    String title = vijayakarnataka_doc.title();
-
-                    Elements vijayakarnataka_headlines_elem = vijayakarnataka_doc.getElementsByClass("other_main_news1").select("ul").select("li").select("a");//this has the headline
+                    vijayakarnataka_url="https://vijaykarnataka.indiatimes.com/";//this is a string
+                    vijayakarnataka_doc = Jsoup.connect(vijayakarnataka_url).get();//this is of type Document
+                    vijayakarnataka_headlines_elem = vijayakarnataka_doc.getElementsByClass("other_main_news1").select("ul").select("li").select("a");//this has the headline
+                    //vijayakarnataka_headlines_elem is of type Elements
 
 
                     int i;
-                    for(i=0;i<=11;i++){
+                    for(i=0;i<vijayakarnataka_headlines_elem.size();i++){
+
+                        vijayakarnataka_href.add(vijayakarnataka_url+vijayakarnataka_headlines_elem.get(i).attr("href"));
+                        Log.d("VijayaKarnataka", "vijayakarnataka Href " +vijayakarnataka_href.get(i));
 
 
-                        vijayakarnataka_href[i]=vijayakarnataka_headlines_elem.get(i).attr("href");//this has the href
-                        vijayakarnataka_href[i]=vijayakarnataka_url+vijayakarnataka_href[i];
-                        Log.d("VijayaKarnataka", "vijayakarnataka HREF " + vijayakarnataka_href[i]);
-
-
-                        vijayakarnataka_headlines[i] = vijayakarnataka_headlines_elem.get(i).text();
-                        Log.d("VijayaKarnataka", "Vijayakarnataka Headlines "+vijayakarnataka_headlines[i]);
-
-
-
-                        Document vijayakarnataka_article_url_doc = Jsoup.connect(vijayakarnataka_href[i]).get();
-                        Elements vijayakarnataka_article_elem = vijayakarnataka_article_url_doc.getElementsByTag("arttextxml");
-                        vijayakarnataka_article[i] = vijayakarnataka_article_elem.toString();
-                        vijayakarnataka_article[i]=Jsoup.parse(vijayakarnataka_article[i]).text();
-                        Log.d("Vijayakarnataka","Vijayakarnataka Articles "+vijayakarnataka_article[i]);
-
-
-                        Elements vijayakarnataka_image_url_elem = vijayakarnataka_article_url_doc.getElementsByClass("thumbImage").select("img");
-                        try{
-                            vijayakarnataka_image_url[i]= vijayakarnataka_image_url_elem.get(0).attr("src");
-                            Log.d("Vijayakarnataka","Vijayakarnataka Image URL "+vijayakarnataka_url+vijayakarnataka_image_url[i]+"\n\n");
-                        }catch (Exception e){
-
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-                                    Toast.makeText(getApplicationContext(), "Unable to fetch",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-
-
-
-
-
-
-
-
-
-
+                        vijayakarnataka_headlines.add(vijayakarnataka_headlines_elem.get(i).text());
+                        Log.d("VijayaKarnataka", "Vijayakarnataka Headlines "+ vijayakarnataka_headlines.get(i));
 
                     }Log.d("Run", "run: End Running");
 
 
-                    for(i=0;i<=11;i++){
+                    for(i=0;i<vijayakarnataka_headlines_elem.size();i++){
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                CustomAdapter customAdapter = new CustomAdapter();
+                                listView.setAdapter(customAdapter);
 
-                                int i;
-                                for(i=0;i<=11;i++){
-                                    final String url = vijayakarnataka_href[i];
-                                    final String headline = vijayakarnataka_headlines[i];
-                                    t[i].setText(vijayakarnataka_headlines[i]);
-                                    t[i].setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent i = new Intent(getApplicationContext(), ReadNews.class);
-                                            i.putExtra("url", url);
-                                            i.putExtra("headline",headline);
-                                            startActivity(i);
-                                        }
-                                    });
-                                }
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                                        Intent i = new Intent(MainActivity.this, ReadNews.class);
+                                        i.putExtra("url", vijayakarnataka_href.get(position));
+                                        i.putExtra("headline",vijayakarnataka_headlines.get(position));
+                                        startActivity(i);
+                                    }
+                                });
                             }
                         });
 
                     }
 
-                    builder.append(title).append("\n");
-
                 } catch (IOException e) {
-                    builder.append("Error : ").append(e.getMessage()).append("\n");
+
                 }
-
-
             }
         }).start();
 // VijayaKarnataka Main Headlines Ends Here
@@ -181,86 +138,97 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
-        //for AsiaNet News Headlines
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final StringBuilder builder = new StringBuilder();
-
-
-                try {
-
-                    String asianet_url = "http://kannada.asianetnews.com/news";
-                    String asianet = "http://kannada.asianetnews.com";
-                    Document asianet_doc = Jsoup.connect(asianet_url).get();
-                    Elements asianet_headlines_elem = asianet_doc.getElementsByClass("cl-block hidden-xs").select("h3");
-
-                    Elements asianet_links_elem = asianet_doc.getElementsByClass("cluster_news_block");
-
-                    Elements asianet_image_url_elem = asianet_doc.getElementsByClass("cluster_news_block").select("img:lt(1)");
-                    //lt(n) --->elements whose sibling index is less than n
-
-
-
-                    int i;
-                    for(i=0;i<=27;i++){
-                        asianet_headlines[i] = asianet_headlines_elem.get(i).text();
-                        Log.d("asianet","asianet_headlines"+asianet_headlines[i]);
-
-
-                        asianet_href[i]=asianet_links_elem.get(i).attr("href");
-                        Log.d("asianet","asianet_href"+" "+asianet+asianet_href[i]);
-
-                        asianet_image_url[i]=asianet_image_url_elem.get(i).attr("data-original");
-                        Log.d("asianet","asianet_image_url"+" "+asianet_image_url[i]);
-
-
-                        Document asianet_article_url = Jsoup.connect(asianet+asianet_href[i]).get();
-                        Elements asianet_article_elem = asianet_article_url.getElementsByClass("article-wrap new-article-desc");
-                        asianet_article[i] = asianet_article_elem.toString();
-                        asianet_article[i]=Jsoup.parse(asianet_article[i]).text();
-                        Log.d("asianet","asianet_article"+" "+asianet_article[i]);
-                    }
-
-
-
-
-                } catch (IOException e) {
-                    builder.append("Error : ").append(e.getMessage()).append("\n");
-                }
-
-
-            }
-        }).start();
-//AsiaNet News Headlines Ends Here
-
-
-
-
-
-
-
-
+//
+//        //for AsiaNet News Headlines
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                final StringBuilder builder = new StringBuilder();
+//                try {
+//
+//                    String asianet_url = "http://kannada.asianetnews.com/news";
+//                    String asianet = "http://kannada.asianetnews.com";
+//                    Document asianet_doc = Jsoup.connect(asianet_url).get();
+//                    Elements asianet_headlines_elem = asianet_doc.getElementsByClass("cl-block hidden-xs").select("h3");
+//
+//                    Elements asianet_links_elem = asianet_doc.getElementsByClass("cluster_news_block");
+//
+//                    Elements asianet_image_url_elem = asianet_doc.getElementsByClass("cluster_news_block").select("img:lt(1)");
+//                    //lt(n) --->elements whose sibling index is less than n
+//
+//
+//
+//                    int i;
+//                    for(i=0;i<=27;i++){
+//                        asianet_headlines[i] = asianet_headlines_elem.get(i).text();
+//                        Log.d("asianet","asianet_headlines"+asianet_headlines[i]);
+//
+//
+//                        asianet_href[i]=asianet_links_elem.get(i).attr("href");
+//                        Log.d("asianet","asianet_href"+" "+asianet+asianet_href[i]);
+//
+//                        asianet_image_url[i]=asianet_image_url_elem.get(i).attr("data-original");
+//                        Log.d("asianet","asianet_image_url"+" "+asianet_image_url[i]);
+//
+//
+//                        Document asianet_article_url = Jsoup.connect(asianet+asianet_href[i]).get();
+//                        Elements asianet_article_elem = asianet_article_url.getElementsByClass("article-wrap new-article-desc");
+//                        asianet_article[i] = asianet_article_elem.toString();
+//                        asianet_article[i]=Jsoup.parse(asianet_article[i]).text();
+//                        Log.d("asianet","asianet_article"+" "+asianet_article[i]);
+//
+//                    }
+//
+//
+//
+//
+//                } catch (IOException e) {
+//                    builder.append("Error : ").append(e.getMessage()).append("\n");
+//                }
+//
+//
+//            }
+//        }).start();
 
 
 
     }
 
-    public void textviews_init()
+    class CustomAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount(){
+            return vijayakarnataka_headlines_elem.size();
+        }
+
+        @Override
+        public Object getItem(int i){
+            return vijayakarnataka_headlines_elem.get(i);
+        }
+
+        @Override
+        public long getItemId(int i){
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup){
+
+            view = getLayoutInflater().inflate(R.layout.custom_layout,null);
+            TextView news = (TextView)view.findViewById(R.id.news);
+            news.setText(vijayakarnataka_headlines.get(i));
+
+            return view;
+        }
+    }
+
+
+
+
+
+    public void listview_init()
     {
-        t[0] = (TextView)findViewById(R.id.t1);
-        t[1] = (TextView)findViewById(R.id.t2);
-        t[2] = (TextView)findViewById(R.id.t3);
-        t[3] = (TextView)findViewById(R.id.t4);
-        t[4] = (TextView)findViewById(R.id.t5);
-        t[5] = (TextView)findViewById(R.id.t6);
-        t[6] = (TextView)findViewById(R.id.t7);
-        t[7] = (TextView)findViewById(R.id.t8);
-        t[8] = (TextView)findViewById(R.id.t9);
-        t[9] = (TextView)findViewById(R.id.t10);
-        t[10]= (TextView)findViewById(R.id.t11);
-        t[11] = (TextView)findViewById(R.id.t12);
+        listView = (ListView) findViewById(R.id.vk_news);
     }
 
     @Override
