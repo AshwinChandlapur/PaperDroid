@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,8 +28,18 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    String[] href = new String[12];
-    String[] headlines = new String[12];
+    String[] vijayakarnataka_href = new String[12];
+    String[] vijayakarnataka_headlines = new String[12];
+
+    String[] vijayakarnataka_others_href = new String [12];
+    String[] vijayakarnataka_others_headlines = new String [12];
+
+
+
+    String[] asianet_headlines = new String[12];
+    String[] asianet_pictures = new String[12];
+
+
     TextView []t=new TextView[12];
 
     @Override
@@ -59,6 +70,8 @@ public class MainActivity extends AppCompatActivity
 
 
 
+
+        //For VijayaKarnataka Main Headlines//
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -74,23 +87,24 @@ public class MainActivity extends AppCompatActivity
 
                     int i;
                     for(i=0;i<=11;i++){
-                        href[i]=links.get(i).attr("href");
-                        href[i]=website_url+href[i];
-                        Log.d("VijayaKar HREF values", href[i]);
+                        vijayakarnataka_href[i]=links.get(i).attr("href");
+                        vijayakarnataka_href[i]=website_url+vijayakarnataka_href[i];
+                        Log.d("VijayaKar HREF values", vijayakarnataka_href[i]);
                     }
 
+
                     for(i=0;i<=11;i++){
-                        headlines[i] = links.get(i).text();
-                        Log.d("VijayKar Headlines are", headlines[i]);
+                        vijayakarnataka_headlines[i] = links.get(i).text();
+                        Log.d("VijayKar Headlines are", vijayakarnataka_headlines[i]);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
 
                                 int i;
                                 for(i=0;i<=11;i++){
-                                    final String url = href[i];
-                                    final String headline = headlines[i];
-                                    t[i].setText(headlines[i]);
+                                    final String url = vijayakarnataka_href[i];
+                                    final String headline = vijayakarnataka_headlines[i];
+                                    t[i].setText(vijayakarnataka_headlines[i]);
                                     t[i].setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
@@ -116,9 +130,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         }).start();
-
-
-
+// VijayaKarnataka Main Headlines Ends Here
 
 
 

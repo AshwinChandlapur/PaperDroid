@@ -2,6 +2,7 @@ package vadeworks.paperdroid;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -69,6 +70,7 @@ public class ReadNews extends AppCompatActivity {
                     Elements body = doc.getElementsByTag("arttextxml");
                     body_texts = body.toString();
                     body_texts=Jsoup.parse(body_texts).text();
+//                    body_texts=body_texts.replaceFirst("\\.","\n\n");
                     Log.d("body is", body_texts);
 
                     runOnUiThread(new Runnable() {
@@ -76,8 +78,18 @@ public class ReadNews extends AppCompatActivity {
                         public void run() {
                             TextView headline_text = (TextView)findViewById(R.id.headline);
                             TextView body_text = (TextView)findViewById(R.id.body);
+                            TextView full_news = (TextView)findViewById(R.id.fullnews);
                             headline_text.setText(headline);
                             body_text.setText(body_texts);
+
+                            full_news.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(Intent.ACTION_VIEW);
+                                    i.setData(Uri.parse(website_url));
+                                    startActivity(i);
+                                }
+                            });
 
                             ImageView imageView = (ImageView)findViewById(R.id.image1);
                             Picasso.with(getApplicationContext()).load(img_url).into(imageView);
