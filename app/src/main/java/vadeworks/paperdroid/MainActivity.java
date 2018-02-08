@@ -30,14 +30,18 @@ public class MainActivity extends AppCompatActivity
 
     String[] vijayakarnataka_href = new String[12];
     String[] vijayakarnataka_headlines = new String[12];
+    String[] vijayakarnataka_article = new String[12];
+    String[] vijayakarnataka_image_url= new String[12];
 
     String[] vijayakarnataka_others_href = new String [12];
     String[] vijayakarnataka_others_headlines = new String [12];
 
 
 
-    String[] asianet_headlines = new String[12];
-    String[] asianet_pictures = new String[12];
+    String[] asianet_headlines = new String[28];
+    String[] asianet_image_url= new String[28];
+    String[] asianet_href = new String[28];
+    String[] asianet_article = new String[28];
 
 
     TextView []t=new TextView[12];
@@ -79,23 +83,64 @@ public class MainActivity extends AppCompatActivity
 
 
                 try {
-                    String website_url="https://vijaykarnataka.indiatimes.com/";
-                    Document doc = Jsoup.connect(website_url).get();
-                    String title = doc.title();
-                    Elements links = doc.getElementsByClass("other_main_news1").select("ul").select("li").select("a");
+                    Log.d("Run", "run: Start Running");
+                    String vijayakarnataka_url="https://vijaykarnataka.indiatimes.com/";
+                    Document vijayakarnataka_doc = Jsoup.connect(vijayakarnataka_url).get();
+                    String title = vijayakarnataka_doc.title();
+
+                    Elements vijayakarnataka_headlines_elem = vijayakarnataka_doc.getElementsByClass("other_main_news1").select("ul").select("li").select("a");//this has the headline
 
 
                     int i;
                     for(i=0;i<=11;i++){
-                        vijayakarnataka_href[i]=links.get(i).attr("href");
-                        vijayakarnataka_href[i]=website_url+vijayakarnataka_href[i];
-                        Log.d("VijayaKar HREF values", vijayakarnataka_href[i]);
-                    }
+
+
+                        vijayakarnataka_href[i]=vijayakarnataka_headlines_elem.get(i).attr("href");//this has the href
+                        vijayakarnataka_href[i]=vijayakarnataka_url+vijayakarnataka_href[i];
+                        Log.d("VijayaKarnataka", "vijayakarnataka HREF " + vijayakarnataka_href[i]);
+
+
+                        vijayakarnataka_headlines[i] = vijayakarnataka_headlines_elem.get(i).text();
+                        Log.d("VijayaKarnataka", "Vijayakarnataka Headlines "+vijayakarnataka_headlines[i]);
+
+
+
+                        Document vijayakarnataka_article_url_doc = Jsoup.connect(vijayakarnataka_href[i]).get();
+                        Elements vijayakarnataka_article_elem = vijayakarnataka_article_url_doc.getElementsByTag("arttextxml");
+                        vijayakarnataka_article[i] = vijayakarnataka_article_elem.toString();
+                        vijayakarnataka_article[i]=Jsoup.parse(vijayakarnataka_article[i]).text();
+                        Log.d("Vijayakarnataka","Vijayakarnataka Articles "+vijayakarnataka_article[i]);
+
+
+                        Elements vijayakarnataka_image_url_elem = vijayakarnataka_article_url_doc.getElementsByClass("thumbImage").select("img");
+                        try{
+                            vijayakarnataka_image_url[i]= vijayakarnataka_image_url_elem.get(0).attr("src");
+                            Log.d("Vijayakarnataka","Vijayakarnataka Image URL "+vijayakarnataka_url+vijayakarnataka_image_url[i]+"\n\n");
+                        }catch (Exception e){
+
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "Unable to fetch",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+
+
+
+
+
+
+
+
+
+
+                    }Log.d("Run", "run: End Running");
 
 
                     for(i=0;i<=11;i++){
-                        vijayakarnataka_headlines[i] = links.get(i).text();
-                        Log.d("VijayKar Headlines are", vijayakarnataka_headlines[i]);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -131,6 +176,70 @@ public class MainActivity extends AppCompatActivity
             }
         }).start();
 // VijayaKarnataka Main Headlines Ends Here
+
+
+
+
+
+
+        //for AsiaNet News Headlines
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final StringBuilder builder = new StringBuilder();
+
+
+                try {
+
+                    String asianet_url = "http://kannada.asianetnews.com/news";
+                    String asianet = "http://kannada.asianetnews.com";
+                    Document asianet_doc = Jsoup.connect(asianet_url).get();
+                    Elements asianet_headlines_elem = asianet_doc.getElementsByClass("cl-block hidden-xs").select("h3");
+
+                    Elements asianet_links_elem = asianet_doc.getElementsByClass("cluster_news_block");
+
+                    Elements asianet_image_url_elem = asianet_doc.getElementsByClass("cluster_news_block").select("img:lt(1)");
+                    //lt(n) --->elements whose sibling index is less than n
+
+
+
+                    int i;
+                    for(i=0;i<=27;i++){
+                        asianet_headlines[i] = asianet_headlines_elem.get(i).text();
+                        Log.d("asianet","asianet_headlines"+asianet_headlines[i]);
+
+
+                        asianet_href[i]=asianet_links_elem.get(i).attr("href");
+                        Log.d("asianet","asianet_href"+" "+asianet+asianet_href[i]);
+
+                        asianet_image_url[i]=asianet_image_url_elem.get(i).attr("data-original");
+                        Log.d("asianet","asianet_image_url"+" "+asianet_image_url[i]);
+
+
+                        Document asianet_article_url = Jsoup.connect(asianet+asianet_href[i]).get();
+                        Elements asianet_article_elem = asianet_article_url.getElementsByClass("article-wrap new-article-desc");
+                        asianet_article[i] = asianet_article_elem.toString();
+                        asianet_article[i]=Jsoup.parse(asianet_article[i]).text();
+                        Log.d("asianet","asianet_article"+" "+asianet_article[i]);
+                    }
+
+
+
+
+                } catch (IOException e) {
+                    builder.append("Error : ").append(e.getMessage()).append("\n");
+                }
+
+
+            }
+        }).start();
+//AsiaNet News Headlines Ends Here
+
+
+
+
+
+
 
 
 

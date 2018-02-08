@@ -50,6 +50,7 @@ public class ReadNews extends AppCompatActivity {
                 final StringBuilder builder = new StringBuilder();
 
                 try {
+
                     Document doc = Jsoup.connect(website_url).get();
                     Elements image_url = doc.getElementsByClass("thumbImage").select("img");
                         try{
