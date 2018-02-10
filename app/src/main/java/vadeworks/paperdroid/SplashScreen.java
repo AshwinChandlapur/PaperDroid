@@ -35,6 +35,7 @@ public class SplashScreen extends AppCompatActivity {
 
         } else {
             Log.d("Lesser than 21 SDK","Lesser than 21 SDK");
+            Log.d("Lesser than 21 SDK","Lesser than 21 SDK");
             // Implement this feature without material design
         }
 
