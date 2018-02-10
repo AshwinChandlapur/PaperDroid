@@ -1,8 +1,6 @@
 package vadeworks.paperdroid;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,9 +26,6 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-
-import vadeworks.paperdroid.Vertical_News.Vertical_News;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,9 +36,7 @@ public class MainActivity extends AppCompatActivity
     String vijayakarnataka_url;
 
 
-    ArrayList<String> vijayakarnataka_href = new ArrayList<String>();
-    ArrayList<String> vijayakarnataka_headlines = new ArrayList<String>();
-
+    ArrayList<News> news = new ArrayList<News>();
 
 
     String[] asianet_headlines = new String[28];
@@ -96,14 +88,17 @@ public class MainActivity extends AppCompatActivity
                     int i;
                     for(i=0;i<vijayakarnataka_headlines_elem.size();i++){
 
-                        vijayakarnataka_href.add(vijayakarnataka_url+vijayakarnataka_headlines_elem.get(i).attr("href"));
-                        Log.d("VijayaKarnataka", "vijayakarnataka Href " +vijayakarnataka_href.get(i));
+                        String link = vijayakarnataka_url+vijayakarnataka_headlines_elem.get(i).attr("href");
+                        String headline = vijayakarnataka_headlines_elem.get(i).text();
+                        news.add(new News(headline,link));
+                        news.get(i).showNews();
 
 
-                        vijayakarnataka_headlines.add(vijayakarnataka_headlines_elem.get(i).text());
-                        Log.d("VijayaKarnataka", "Vijayakarnataka Headlines "+ vijayakarnataka_headlines.get(i));
+                    }
+                    news.size();
 
-                    }Log.d("Run", "run: End Running");
+                    Log.d("Run", "run: End Running");
+                    Log.d("news-info", "news-info"+ news.size());
 
 
                     for(i=0;i<vijayakarnataka_headlines_elem.size();i++){
@@ -118,17 +113,16 @@ public class MainActivity extends AppCompatActivity
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-//                                        Intent i = new Intent(MainActivity.this, ReadNews.class);
+                                        Intent i = new Intent(MainActivity.this, ReadNews.class);
+                                        i.putExtra("headline", news.get(position).head);
+                                        i.putExtra("url", news.get(position).link);
+                                        startActivity(i);
+
+//                                        Intent i = new Intent(MainActivity.this, Vertical_News.class);
 //                                        i.putExtra("all_headlines",vijayakarnataka_headlines);
 //                                        i.putExtra("url", vijayakarnataka_href.get(position));
 //                                        i.putExtra("headline",vijayakarnataka_headlines.get(position));
 //                                        startActivity(i);
-
-                                        Intent i = new Intent(MainActivity.this, Vertical_News.class);
-                                        i.putExtra("all_headlines",vijayakarnataka_headlines);
-                                        i.putExtra("url", vijayakarnataka_href.get(position));
-                                        i.putExtra("headline",vijayakarnataka_headlines.get(position));
-                                        startActivity(i);
                                     }
                                 });
                             }
@@ -225,7 +219,7 @@ public class MainActivity extends AppCompatActivity
 
             view = getLayoutInflater().inflate(R.layout.custom_layout,null);
             TextView news = (TextView)view.findViewById(R.id.news);
-            news.setText(vijayakarnataka_headlines.get(i));
+            news.setText(MainActivity.this.news.get(i).head);
 
             return view;
         }
