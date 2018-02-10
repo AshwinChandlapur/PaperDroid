@@ -1,39 +1,33 @@
 package vadeworks.paperdroid;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.spec.ECField;
+import java.util.ArrayList;
+
+import vadeworks.paperdroid.Vertical_News.VerticalViewPager;
+import vadeworks.paperdroid.Vertical_News.VerticlePagerAdapter;
 
 public class ReadNews extends AppCompatActivity {
     public WebView webView;
     String website_url,headline,img_url,body_texts;
+
+    ArrayList<String> vijayakarnataka_headlines_news = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +39,9 @@ public class ReadNews extends AppCompatActivity {
 
       website_url = getIntent().getStringExtra("url");
       headline = getIntent().getStringExtra("headline");
+      vijayakarnataka_headlines_news = getIntent().getStringArrayListExtra("all_headlines") ;
+        Log.d("Read News Headlines", "onCreate: "+vijayakarnataka_headlines_news);
+
 
 
         new Thread(new Runnable() {
@@ -114,40 +111,7 @@ public class ReadNews extends AppCompatActivity {
             }
         }).start();
 
-
-
-
-
-//        webView = (WebView) findViewById(R.id.webview_askaway);
-//        webView.getSettings().setJavaScriptEnabled(true);
-//        webView.getSettings().setLoadsImagesAutomatically(true);
-//        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-//        webView.setWebViewClient(new WebViewClient(){
-//
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//
-//                Toast.makeText(getApplicationContext(),"Login successfull",Toast.LENGTH_LONG).show();
-////                view.loadUrl("javascript:(function() { " +
-////                        "document.getElementsByTagName(\"h1\")[0].style.display = \"none\"; })()");
-//
-//
-//
-//                // hide element by class name
-//                view.loadUrl("javascript:(function() { " +
-//                        "document.getElementsByClassName(\"contentarea\")[0].style.display=\"none\"; })()");
-////                // hide element by id
-////                view.loadUrl("javascript:(function() { " +
-////                        "document.getElementById('fixedMenu').style.display='none';})()"+
-////                        "document.getElementById('fixedMenu').style.display='none';})()");
-//
-//                Toast.makeText(getApplicationContext(),"Login Only",Toast.LENGTH_LONG).show();
-//            }
-//        });
-//
-//        webView.loadUrl(url);
-
-
     }
+
 
 }

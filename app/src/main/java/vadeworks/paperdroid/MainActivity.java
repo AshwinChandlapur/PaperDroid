@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import vadeworks.paperdroid.Vertical_News.Vertical_News;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -116,7 +118,14 @@ public class MainActivity extends AppCompatActivity
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                                        Intent i = new Intent(MainActivity.this, ReadNews.class);
+//                                        Intent i = new Intent(MainActivity.this, ReadNews.class);
+//                                        i.putExtra("all_headlines",vijayakarnataka_headlines);
+//                                        i.putExtra("url", vijayakarnataka_href.get(position));
+//                                        i.putExtra("headline",vijayakarnataka_headlines.get(position));
+//                                        startActivity(i);
+
+                                        Intent i = new Intent(MainActivity.this, Vertical_News.class);
+                                        i.putExtra("all_headlines",vijayakarnataka_headlines);
                                         i.putExtra("url", vijayakarnataka_href.get(position));
                                         i.putExtra("headline",vijayakarnataka_headlines.get(position));
                                         startActivity(i);
